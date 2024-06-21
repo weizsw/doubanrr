@@ -1,6 +1,5 @@
 requests
 datetime
-sqlite3
 loguru
 beautifulsoup4
 feedparser
