@@ -47,7 +47,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GH_PAT }}
 
       - name: Log into registry Docker
         if: github.event_name != 'pull_request'
@@ -98,7 +98,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # This token is provided by Actions, no need to create a new one
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}  # This token is provided by Actions, no need to create a new one
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
