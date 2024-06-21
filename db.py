@@ -46,7 +46,7 @@ def get_token(token_type):
 
     c.execute(
         """
-        SELECT token
+        SELECT token, added_time
         FROM tokens_table
         WHERE type = ?
         ORDER BY added_time DESC
@@ -59,7 +59,7 @@ def get_token(token_type):
 
     conn.close()
 
-    return result[0] if result else None
+    return (result[0], result[1]) if result else (None, None)
 
 
 def set_imdb_record(imdb_id):
@@ -68,7 +68,7 @@ def set_imdb_record(imdb_id):
 
     c.execute(
         """
-        INSERT INTO imdb_table (imdb_id)
+        INSERT OR IGNORE INTO imdb_table (imdb_id)
         VALUES (?)
     """,
         (imdb_id,),
@@ -77,3 +77,23 @@ def set_imdb_record(imdb_id):
     conn.commit()
     conn.close()
     logger.info(f"IMDb ID {imdb_id} has been set.")
+
+
+def get_imdb_record(imdb_id):
+    conn = sqlite3.connect("doubanrr.db")
+    c = conn.cursor()
+
+    c.execute(
+        """
+        SELECT imdb_id
+        FROM imdb_table
+        WHERE imdb_id = ?
+    """,
+        (imdb_id,),
+    )
+
+    result = c.fetchone()
+
+    conn.close()
+
+    return result[0] if result else None

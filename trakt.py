@@ -4,8 +4,6 @@ import requests
 from loguru import logger
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-import consts
-import db
 import global_vars
 
 
@@ -38,10 +36,7 @@ def refresh_token():
         logger.error(f"HTTP status code is {response.status_code}")
 
     response_json = response.json()
-    access_token = response_json["access_token"]
-    refresh_token = response_json["refresh_token"]
-    db.set_token(access_token, consts.ACCESS_TOKEN_TYPE)
-    db.set_token(refresh_token, consts.REFRESH_TOKEN_TYPE)
+    return response_json["access_token"], response_json["refresh_token"]
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
@@ -64,11 +59,7 @@ def add_movie_to_list(imdb_id):
         logger.error(f"HTTP status code is {response.status_code}")
 
     response_json = response.json()
-    if (
-        response_json["added"]["movies"] == 0
-        and not response_json["not_found"]["movies"]
-    ):
-        logger.debug(f"IMDb ID {imdb_id} already added.")
+
     if response_json["not_found"]["movies"]:
         logger.debug(f"IMDb ID {imdb_id} not found in movies.")
     return True if response_json["added"]["movies"] == 1 else False
@@ -94,8 +85,7 @@ def add_show_to_list(imdb_id):
         logger.error(f"HTTP status code is {response.status_code}")
 
     response_json = response.json()
-    if response_json["added"]["shows"] == 0 and not response_json["not_found"]["shows"]:
-        logger.debug(f"IMDb ID {imdb_id} already added.")
+
     if response_json["not_found"]["shows"]:
         logger.debug(f"IMDb ID {imdb_id} not found in shows.")
     return True if response_json["added"]["shows"] == 1 else False
@@ -121,11 +111,7 @@ def add_season_to_list(imdb_id):
         logger.error(f"HTTP status code is {response.status_code}")
 
     response_json = response.json()
-    if (
-        response_json["added"]["seasons"] == 0
-        and not response_json["not_found"]["seasons"]
-    ):
-        logger.debug(f"IMDb ID {imdb_id} already added.")
+
     if response_json["not_found"]["seasons"]:
         logger.debug(f"IMDb ID {imdb_id} not found in seasons.")
     return True if response_json["added"]["seasons"] == 1 else False
@@ -151,11 +137,7 @@ def add_episode_to_list(imdb_id):
         logger.error(f"HTTP status code is {response.status_code}")
 
     response_json = response.json()
-    if (
-        response_json["added"]["episodes"] == 0
-        and not response_json["not_found"]["episodes"]
-    ):
-        logger.debug(f"IMDb ID {imdb_id} already added.")
+
     if response_json["not_found"]["episodes"]:
         logger.debug(f"IMDb ID {imdb_id} not found in episodes.")
     return True if response_json["added"]["episodes"] == 1 else False
