@@ -58,7 +58,7 @@ if __name__ == "__main__":
     if global_vars.SCHEDULE > 0:
         while True:
             main()
-            print(f"Waiting for {global_vars.SCHEDULE} minutes before next run.")
+            logger.info(f"Waiting for {global_vars.SCHEDULE} minutes before next run.")
             time.sleep(global_vars.SCHEDULE * 60)
     else:
         main()
