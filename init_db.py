@@ -1,6 +1,6 @@
 import sqlite3
 
-conn = sqlite3.connect("doubanrr.db")
+conn = sqlite3.connect("./db/doubanrr.db")
 # Creates the database if it doesn't exist
 c = conn.cursor()
 

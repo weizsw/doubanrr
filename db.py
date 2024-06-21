@@ -4,7 +4,7 @@ from loguru import logger
 
 
 def set_token(token, token_type):
-    conn = sqlite3.connect("doubanrr.db")
+    conn = sqlite3.connect("./db/doubanrr.db")
     c = conn.cursor()
 
     c.execute(
@@ -21,7 +21,7 @@ def set_token(token, token_type):
 
 
 def update_token(id, new_token, token_type):
-    conn = sqlite3.connect("doubanrr.db")
+    conn = sqlite3.connect("./db/doubanrr.db")
     c = conn.cursor()
 
     c.execute(
@@ -41,7 +41,7 @@ def update_token(id, new_token, token_type):
 
 
 def get_token(token_type):
-    conn = sqlite3.connect("doubanrr.db")
+    conn = sqlite3.connect("./db/doubanrr.db")
     c = conn.cursor()
 
     c.execute(
@@ -63,7 +63,7 @@ def get_token(token_type):
 
 
 def set_imdb_record(imdb_id):
-    conn = sqlite3.connect("doubanrr.db")
+    conn = sqlite3.connect("./db/doubanrr.db")
     c = conn.cursor()
 
     c.execute(
@@ -80,7 +80,7 @@ def set_imdb_record(imdb_id):
 
 
 def get_imdb_record(imdb_id):
-    conn = sqlite3.connect("doubanrr.db")
+    conn = sqlite3.connect("./db/doubanrr.db")
     c = conn.cursor()
 
     c.execute(
