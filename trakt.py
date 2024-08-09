@@ -141,3 +141,45 @@ def add_episode_to_list(imdb_id):
     if response_json["not_found"]["episodes"]:
         logger.debug(f"IMDb ID {imdb_id} not found in episodes.")
     return True if response_json["added"]["episodes"] == 1 else False
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+def get_watched_movies():
+    url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/watched/movies"
+    payload = {}
+    headers = {
+        "trakt-api-version": "2",
+        "trakt-api-key": global_vars.CLIENT_ID,
+        "Content-Type": "application/json",
+    }
+    try:
+        response = requests.request("GET", url, headers=headers, data=payload)
+    except Exception as e:
+        logger.error(f"Encountered an error: {e}. Retrying in 3 seconds...")
+    if response.status_code != 200:
+        logger.error(f"HTTP status code is {response.status_code}")
+        return None
+
+    response_json = response.json()
+    return response_json
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+def get_watched_shows():
+    url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/watched/shows"
+    payload = {}
+    headers = {
+        "trakt-api-version": "2",
+        "trakt-api-key": global_vars.CLIENT_ID,
+        "Content-Type": "application/json",
+    }
+    try:
+        response = requests.request("GET", url, headers=headers, data=payload)
+    except Exception as e:
+        logger.error(f"Encountered an error: {e}. Retrying in 3 seconds...")
+    if response.status_code != 200:
+        logger.error(f"HTTP status code is {response.status_code}")
+        return None
+
+    response_json = response.json()
+    return response_json
