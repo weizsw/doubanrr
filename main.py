@@ -24,6 +24,13 @@ def main():
         trakt.add_episode_to_list,
     ]
 
+    remove_functions = [
+        trakt.remove_movie_from_list,
+        trakt.remove_show_from_list,
+        trakt.remove_season_from_list,
+        trakt.remove_episode_from_list,
+    ]
+
     token, added_time = db.get_token(consts.ACCESS_TOKEN_TYPE)
     if token:
         added_time = datetime.strptime(added_time, "%Y-%m-%d %H:%M:%S")
@@ -48,12 +55,20 @@ def main():
         imdb_id = rss.get_imdb_id(entry.link)
         db_record = db.get_imdb_record(imdb_id)
         if db_record:
-            logger.debug(f"{entry.title} with IMDb ID {imdb_id} already added.")
-            continue
-        _, watched = db_record
-        if watched:
-            logger.debug(f"{entry.title} with IMDb ID {imdb_id} is already watched.")
-            continue
+            _, watched = db_record
+            if watched:
+                for f in remove_functions:
+                    if f(imdb_id):
+                        logger.info(
+                            f"{entry.title} with IMDb ID {imdb_id} has been removed from the list."
+                        )
+                        break
+                    time.sleep(1.1)
+                logger.info(f"{entry.title} with IMDb ID {imdb_id} is already watched.")
+                continue
+            else:
+                logger.info(f"{entry.title} with IMDb ID {imdb_id} already added.")
+                continue
 
         for f in add_functions:
             if f(imdb_id):
