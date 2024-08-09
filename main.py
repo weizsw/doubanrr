@@ -46,10 +46,13 @@ def main():
             continue
 
         imdb_id = rss.get_imdb_id(entry.link)
-
         db_record = db.get_imdb_record(imdb_id)
-        if db_record or db_record.get("watched") is True:
+        if db_record:
             logger.debug(f"{entry.title} with IMDb ID {imdb_id} already added.")
+            continue
+        _, watched = db_record
+        if watched:
+            logger.debug(f"{entry.title} with IMDb ID {imdb_id} is already watched.")
             continue
 
         for f in add_functions:
