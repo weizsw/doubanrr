@@ -96,4 +96,4 @@ def get_imdb_record(imdb_id):
 
     conn.close()
 
-    return result[0] if result else None
+    return result if result else None
