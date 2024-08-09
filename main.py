@@ -44,9 +44,13 @@ def main():
     watched_movies = trakt.get_watched_movies()
     watched_shows = trakt.get_watched_shows()
     for movie in watched_movies:
-        db.set_imdb_record(movie["movie"]["ids"]["imdb"], watched=True)
+        if not db.get_imdb_record(movie["movie"]["ids"]["imdb"]):
+            db.set_imdb_record(
+                movie["movie"]["ids"]["imdb"], watched=True, removed=False
+            )
     for show in watched_shows:
-        db.set_imdb_record(show["show"]["ids"]["imdb"], watched=True)
+        if not db.get_imdb_record(show["show"]["ids"]["imdb"]):
+            db.set_imdb_record(show["show"]["ids"]["imdb"], watched=True, removed=False)
 
     for entry in feed:
         if not common.is_wanna_watch(entry.title):
@@ -55,10 +59,14 @@ def main():
         imdb_id = rss.get_imdb_id(entry.link)
         db_record = db.get_imdb_record(imdb_id)
         if db_record:
-            _, watched = db_record
+            _, watched, removed = db_record
+            if removed:
+                logger.info(f"{entry.title} with IMDb ID {imdb_id} has been removed.")
+                continue
             if watched:
                 for f in remove_functions:
                     if f(imdb_id):
+                        db.set_imdb_record(imdb_id, watched=True, removed=True)
                         logger.info(
                             f"{entry.title} with IMDb ID {imdb_id} has been removed from the list."
                         )
