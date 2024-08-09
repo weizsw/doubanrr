@@ -22,6 +22,7 @@ c.execute(
         id INTEGER PRIMARY KEY,
         imdb_id TEXT NOT NULL UNIQUE,
         watched BOOLEAN DEFAULT 0,
+        removed BOOLEAN DEFAULT 0,
         added_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 """
