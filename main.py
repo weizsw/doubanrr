@@ -34,13 +34,21 @@ def main():
             db.update_token(access_token, consts.ACCESS_TOKEN_TYPE)
             db.update_token(refresh_token, consts.REFRESH_TOKEN_TYPE)
 
+    watched_movies = trakt.get_watched_movies()
+    watched_shows = trakt.get_watched_shows()
+    for movie in watched_movies:
+        db.set_imdb_record(movie["movie"]["ids"]["imdb"], watched=True)
+    for show in watched_shows:
+        db.set_imdb_record(show["show"]["ids"]["imdb"], watched=True)
+
     for entry in feed:
         if not common.is_wanna_watch(entry.title):
             continue
 
         imdb_id = rss.get_imdb_id(entry.link)
 
-        if db.get_imdb_record(imdb_id):
+        db_record = db.get_imdb_record(imdb_id)
+        if db_record or db_record.get("watched") is True:
             logger.debug(f"{entry.title} with IMDb ID {imdb_id} already added.")
             continue
 
