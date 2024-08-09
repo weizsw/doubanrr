@@ -62,21 +62,21 @@ def get_token(token_type):
     return (result[0], result[1]) if result else (None, None)
 
 
-def set_imdb_record(imdb_id):
+def set_imdb_record(imdb_id, watched=False):
     conn = sqlite3.connect("./db/doubanrr.db")
     c = conn.cursor()
 
     c.execute(
         """
-        INSERT OR IGNORE INTO imdb_table (imdb_id)
-        VALUES (?)
-    """,
-        (imdb_id,),
+        INSERT OR REPLACE INTO imdb_table (imdb_id, watched)
+        VALUES (?, ?)
+        """,
+        (imdb_id, watched),
     )
 
     conn.commit()
     conn.close()
-    logger.info(f"IMDb ID {imdb_id} has been set.")
+    logger.info(f"IMDb ID {imdb_id} has been set or updated.")
 
 
 def get_imdb_record(imdb_id):
@@ -85,7 +85,7 @@ def get_imdb_record(imdb_id):
 
     c.execute(
         """
-        SELECT imdb_id
+        SELECT imdb_id, watched
         FROM imdb_table
         WHERE imdb_id = ?
     """,
