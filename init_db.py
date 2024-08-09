@@ -21,6 +21,7 @@ c.execute(
     CREATE TABLE IF NOT EXISTS imdb_table (
         id INTEGER PRIMARY KEY,
         imdb_id TEXT NOT NULL UNIQUE,
+        watched BOOLEAN DEFAULT 0,
         added_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 """
