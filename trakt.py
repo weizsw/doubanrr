@@ -183,3 +183,103 @@ def get_watched_shows():
 
     response_json = response.json()
     return response_json
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+def remove_movie_from_list(imdb_id):
+    url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/lists/{global_vars.LIST_ID}/items/remove"
+
+    payload = json.dumps({"movies": [{"ids": {"imdb": imdb_id}}]})
+    headers = {
+        "trakt-api-version": "2",
+        "trakt-api-key": global_vars.CLIENT_ID,
+        "Authorization": "Bearer " + global_vars.ACCESS_TOKEN,
+        "Content-Type": "application/json",
+    }
+    try:
+        response = requests.request("POST", url, headers=headers, data=payload)
+    except Exception as e:
+        logger.error(f"Encountered an error: {e}. Retrying in 3 seconds...")
+    if response.status_code != 200:
+        logger.error(f"HTTP status code is {response.status_code}")
+        return False
+
+    response_json = response.json()
+    if response_json["not_found"]["movies"]:
+        logger.debug(f"IMDb ID {imdb_id} not found in movies.")
+    return True if response_json["deleted"]["movies"] == 1 else False
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+def remove_show_from_list(imdb_id):
+    url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/lists/{global_vars.LIST_ID}/items/remove"
+
+    payload = json.dumps({"shows": [{"ids": {"imdb": imdb_id}}]})
+    headers = {
+        "trakt-api-version": "2",
+        "trakt-api-key": global_vars.CLIENT_ID,
+        "Authorization": "Bearer " + global_vars.ACCESS_TOKEN,
+        "Content-Type": "application/json",
+    }
+    try:
+        response = requests.request("POST", url, headers=headers, data=payload)
+    except Exception as e:
+        logger.error(f"Encountered an error: {e}. Retrying in 3 seconds...")
+    if response.status_code != 200:
+        logger.error(f"HTTP status code is {response.status_code}")
+        return False
+
+    response_json = response.json()
+    if response_json["not_found"]["shows"]:
+        logger.debug(f"IMDb ID {imdb_id} not found in shows.")
+    return True if response_json["deleted"]["shows"] == 1 else False
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+def remove_season_from_list(imdb_id):
+    url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/lists/{global_vars.LIST_ID}/items/remove"
+
+    payload = json.dumps({"seasons": [{"ids": {"imdb": imdb_id}}]})
+    headers = {
+        "trakt-api-version": "2",
+        "trakt-api-key": global_vars.CLIENT_ID,
+        "Authorization": "Bearer " + global_vars.ACCESS_TOKEN,
+        "Content-Type": "application/json",
+    }
+    try:
+        response = requests.request("POST", url, headers=headers, data=payload)
+    except Exception as e:
+        logger.error(f"Encountered an error: {e}. Retrying in 3 seconds...")
+    if response.status_code != 200:
+        logger.error(f"HTTP status code is {response.status_code}")
+        return False
+
+    response_json = response.json()
+    if response_json["not_found"]["seasons"]:
+        logger.debug(f"IMDb ID {imdb_id} not found in seasons.")
+    return True if response_json["deleted"]["seasons"] == 1 else False
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+def remove_episode_from_list(imdb_id):
+    url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/lists/{global_vars.LIST_ID}/items/remove"
+
+    payload = json.dumps({"episodes": [{"ids": {"imdb": imdb_id}}]})
+    headers = {
+        "trakt-api-version": "2",
+        "trakt-api-key": global_vars.CLIENT_ID,
+        "Authorization": "Bearer " + global_vars.ACCESS_TOKEN,
+        "Content-Type": "application/json",
+    }
+    try:
+        response = requests.request("POST", url, headers=headers, data=payload)
+    except Exception as e:
+        logger.error(f"Encountered an error: {e}. Retrying in 3 seconds...")
+    if response.status_code != 200:
+        logger.error(f"HTTP status code is {response.status_code}")
+        return False
+
+    response_json = response.json()
+    if response_json["not_found"]["episodes"]:
+        logger.debug(f"IMDb ID {imdb_id} not found in episodes.")
+    return True if response_json["deleted"]["episodes"] == 1 else False
