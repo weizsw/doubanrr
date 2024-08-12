@@ -2,11 +2,16 @@ import json
 
 import requests
 from loguru import logger
+from ratelimit import limits, sleep_and_retry
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 import global_vars
 
+FIVE_MINUTES = 300
 
+
+@sleep_and_retry
+@limits(calls=1, period=1)
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def refresh_token():
     url = "https://api.trakt.tv/oauth/token"
@@ -39,6 +44,8 @@ def refresh_token():
     return response_json["access_token"], response_json["refresh_token"]
 
 
+@sleep_and_retry
+@limits(calls=1, period=1)
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def add_movie_to_list(imdb_id):
     url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/lists/{global_vars.LIST_ID}/items"
@@ -65,6 +72,8 @@ def add_movie_to_list(imdb_id):
     return True if response_json["added"]["movies"] == 1 else False
 
 
+@sleep_and_retry
+@limits(calls=1, period=1)
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def add_show_to_list(imdb_id):
     url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/lists/{global_vars.LIST_ID}/items"
@@ -91,6 +100,8 @@ def add_show_to_list(imdb_id):
     return True if response_json["added"]["shows"] == 1 else False
 
 
+@sleep_and_retry
+@limits(calls=1, period=1)
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def add_season_to_list(imdb_id):
     url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/lists/{global_vars.LIST_ID}/items"
@@ -117,6 +128,8 @@ def add_season_to_list(imdb_id):
     return True if response_json["added"]["seasons"] == 1 else False
 
 
+@sleep_and_retry
+@limits(calls=1, period=1)
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def add_episode_to_list(imdb_id):
     url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/lists/{global_vars.LIST_ID}/items"
@@ -143,6 +156,8 @@ def add_episode_to_list(imdb_id):
     return True if response_json["added"]["episodes"] == 1 else False
 
 
+@sleep_and_retry
+@limits(calls=1000, period=FIVE_MINUTES)
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def get_watched_movies():
     url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/watched/movies"
@@ -164,6 +179,8 @@ def get_watched_movies():
     return response_json
 
 
+@sleep_and_retry
+@limits(calls=1000, period=FIVE_MINUTES)
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def get_watched_shows():
     url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/watched/shows"
@@ -185,6 +202,8 @@ def get_watched_shows():
     return response_json
 
 
+@sleep_and_retry
+@limits(calls=1, period=1)
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def remove_movie_from_list(imdb_id):
     url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/lists/{global_vars.LIST_ID}/items/remove"
@@ -210,6 +229,8 @@ def remove_movie_from_list(imdb_id):
     return True if response_json["deleted"]["movies"] == 1 else False
 
 
+@sleep_and_retry
+@limits(calls=1, period=1)
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def remove_show_from_list(imdb_id):
     url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/lists/{global_vars.LIST_ID}/items/remove"
@@ -235,6 +256,8 @@ def remove_show_from_list(imdb_id):
     return True if response_json["deleted"]["shows"] == 1 else False
 
 
+@sleep_and_retry
+@limits(calls=1, period=1)
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def remove_season_from_list(imdb_id):
     url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/lists/{global_vars.LIST_ID}/items/remove"
@@ -260,6 +283,8 @@ def remove_season_from_list(imdb_id):
     return True if response_json["deleted"]["seasons"] == 1 else False
 
 
+@sleep_and_retry
+@limits(calls=1, period=1)
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def remove_episode_from_list(imdb_id):
     url = f"https://api.trakt.tv/users/{global_vars.USER_NAME}/lists/{global_vars.LIST_ID}/items/remove"
