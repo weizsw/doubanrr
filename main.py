@@ -71,7 +71,6 @@ def main():
                             f"{entry.title} with IMDb ID {imdb_id} has been removed from the list."
                         )
                         break
-                    time.sleep(1.1)
                 logger.info(f"{entry.title} with IMDb ID {imdb_id} is already watched.")
                 continue
             else:
@@ -85,7 +84,6 @@ def main():
                     f"{entry.title} with IMDb ID {imdb_id} has been added to the list."
                 )
                 break
-            time.sleep(1.1)
 
 
 if __name__ == "__main__":
